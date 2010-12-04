@@ -89,5 +89,5 @@ __END__
   %ul{:style=>"list-style-type: none; padding-left: 150px;"}
     - for id in @ids
       %li{:style=>"margin-bottom: 5px;"}
-        %a{:href=>"/l/%s"%[id[0]]}= "Zadatak #{id[0]}#{" (#{id[1]})" if !id[1].nil?}"
+        %a{:style=>"color: red;", :href=>"/l/%s"%[id[0]]}= "Zadatak #{id[0]}#{" (#{id[1]})" if !id[1].nil?}"
 
