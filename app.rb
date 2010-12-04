@@ -4,28 +4,28 @@ def lista
   fn = "lista.txt"
   return Marshal.load(File.read(fn)) if File.exist? fn
 
-  s = "z-trening.com|/training.php\?all_tasks\=1"
-  l1, l2 = s.split('|'), s.gsub("_tasks", "_user_tasks").split('|')
-
-  ls, output = "", ""
-  [l1, l2].each{ |x|
-    Net::HTTP.start(x[0]){ |http|
-      resp=http.get(x[1]); lista_s=resp.body
-    }
-  }
-
-  cmd = <<EOS
-grep '&nbsp;<a href="tasks.php?show_task=.*>' | sed 's/.*&nbsp;//g' | grep -o '[0-9]\\{10\\}.*' | sed -e 's/">/ - /g' -e 's:</a></TD>::g'
-EOS
-
-  IO.popen(cmd, "w+") do |pipe|
-    pipe.puts ls; pipe.close_write; output += pipe.read
-  end
-
-  r = output.gsub("\r", "").split("\n")
-  # File.open("lista.txt", "w+"){|f| f.puts Marshal.dump r} # DUMP to file
-
-  return r
+#   s = "z-trening.com|/training.php\?all_tasks\=1"
+#   l1, l2 = s.split('|'), s.gsub("_tasks", "_user_tasks").split('|')
+# 
+#   ls, output = "", ""
+#   [l1, l2].each{ |x|
+#     Net::HTTP.start(x[0]){ |http|
+#       resp=http.get(x[1]); lista_s=resp.body
+#     }
+#   }
+# 
+#   cmd = <<EOS
+# grep '&nbsp;<a href="tasks.php?show_task=.*>' | sed 's/.*&nbsp;//g' | grep -o '[0-9]\\{10\\}.*' | sed -e 's/">/ - /g' -e 's:</a></TD>::g'
+# EOS
+# 
+#   IO.popen(cmd, "w+") do |pipe|
+#     pipe.puts ls; pipe.close_write; output += pipe.read
+#   end
+# 
+#   r = output.gsub("\r", "").split("\n")
+#   # File.open("lista.txt", "w+"){|f| f.puts Marshal.dump r} # DUMP to file
+# 
+#   return r
 end
 
 def l(id)
