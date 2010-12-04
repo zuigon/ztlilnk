@@ -1,18 +1,14 @@
-require "rubygems"
-require "sinatra"
-require "haml"
-require "net/http"
-require 'open3'
+%w(rubygems sinatra haml net/http open3).each{|x| require x}
 
 def lista
   fn = "lista.txt"
   return Marshal.load(File.read(fn)) if File.exist? fn
 
   s = "z-trening.com|/training.php\?all_tasks\=1"
-  link1, link2 = s.split('|'), s.gsub("_tasks", "_user_tasks").split('|')
+  l1, l2 = s.split('|'), s.gsub("_tasks", "_user_tasks").split('|')
 
-  lista_s, output = "", ""
-  [link1, link2].each{ |x|
+  ls, output = "", ""
+  [l1, l2].each{ |x|
     Net::HTTP.start(x[0]){ |http|
       resp=http.get(x[1]); lista_s=resp.body
     }
@@ -23,13 +19,19 @@ grep '&nbsp;<a href="tasks.php?show_task=.*>' | sed 's/.*&nbsp;//g' | grep -o '[
 EOS
 
   IO.popen(cmd, "w+") do |pipe|
-    pipe.puts lista_s; pipe.close_write; output += pipe.read
+    pipe.puts ls; pipe.close_write; output += pipe.read
   end
 
   r = output.gsub("\r", "").split("\n")
   # File.open("lista.txt", "w+"){|f| f.puts Marshal.dump r} # DUMP to file
 
   return r
+end
+
+def l(id)
+  return nil if id.to_i.to_s != id
+  id = id.rjust(9).gsub(' ', '0')
+  "http://z-trening.com/tasks.php?show_task=5%s" % [id]
 end
 
 get '/' do
@@ -48,12 +50,6 @@ get '/f' do
     collect{|x| x if x.to_i.to_s == x}.compact.
     collect{|x| [x, name.call(x)]}
   haml :links
-end
-
-def l(id)
-  return nil if id.to_i.to_s != id
-  id = id.rjust(9).gsub(' ', '0')
-  "http://z-trening.com/tasks.php?show_task=5%s" % [id]
 end
 
 get '/l/:id' do |id|
